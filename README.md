@@ -14,9 +14,9 @@ this app for learn implementation for rag model for question answer
 ## install the requirements packages
 --> pip install -r requirements.text
 
-## setup the env variable 
+# setup the env variable 
 
-# change the file of  .env.example to .env and put your secrt keys
+## change the file of  .env.example to .env and put your secrt keys
 
 '''
 $ cp .env.example .env
