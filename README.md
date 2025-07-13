@@ -12,7 +12,7 @@ this app for learn implementation for rag model for question answer
 - Activate environment
 
 ## install the requirements packages
---> pip install -r requirements.text
+--> pip install -r requirements.txt
 
 # setup the env variable 
 
@@ -31,3 +31,6 @@ $ uvicorn main:app --reload --host 0.0.0.0 --port 5000
 ## postman Collection
 
 install it and put into in assets floder
+
+
+
