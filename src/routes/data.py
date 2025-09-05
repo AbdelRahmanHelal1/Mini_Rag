@@ -6,6 +6,7 @@ from fastapi import File
 from models import ResponseSignal
 from helpers.config import get_settings, Settings
 from controllers import ProjectController,DataController
+from .schemes.data import ProcessRequest
 import aiofile
 import logging
 
@@ -48,7 +49,12 @@ async def upload_file(prject_id: str,file: UploadFile= File(...),
             "file_id":file_id})
 
     
-            
+@data_router.post("/process/{prject_id}") 
+async def process_file(prject_id: str, processrequest: ProcessRequest)  :
+
+    file_id= processrequest.file_id
+
+    return file_id
 
     
       
