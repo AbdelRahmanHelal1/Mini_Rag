@@ -5,7 +5,7 @@ from fastapi import File
 # from controllers.DataController import DataController
 from models import ResponseSignal
 from helpers.config import get_settings, Settings
-from controllers import ProjectController,DataController
+from controllers import ProjectController,DataController,ProcessController
 from .schemes.data import ProcessRequest
 import aiofile
 import logging
@@ -50,11 +50,30 @@ async def upload_file(prject_id: str,file: UploadFile= File(...),
 
     
 @data_router.post("/process/{prject_id}") 
-async def process_file(prject_id: str, processrequest: ProcessRequest)  :
+async def process_file(prject_id:str, processrequest: ProcessRequest)  :
 
     file_id= processrequest.file_id
+    chunk_size= processrequest.chunk_size
+    overlap= processrequest.overlap
 
-    return file_id
+    process_controller=ProcessController(prject_id,file_id)
+
+    file_content= process_controller.get_file_content()
+
+    file_chunks= process_controller.Process_file_content(
+        content=file_content,
+        file_id=file_id,
+        chunk_size=chunk_size,          
+        overlap=overlap
+    )
+
+    if file_chunks is None or len(file_chunks)==0:
+        return JSONResponse(
+            content={"Signal": ResponseSignal.FILE_PROCESSING_FAILED.value,
+            "Error":"No chunks were created from the file."},
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )   
+    return file_chunks
 
     
       
