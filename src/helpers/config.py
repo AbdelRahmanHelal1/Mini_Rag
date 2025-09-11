@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     FILE_ALLOWED_EXTENSIONS: list
     FILE_MAX_SIZE: int = 10485760            # 10 MB
     FILE_CHUNK_SIZE: int 
+    MONOGO_DB_URL : str
+    MONGO_DB_NAME : str
     
     class Config:
         env_file = ".env"
