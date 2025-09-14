@@ -11,7 +11,7 @@ async def startup_event():
     settings = get_settings()
 
     app.mongo_conn = AsyncIOMotorClient(settings.MONOGO_DB_URL)
-    app.db_client = app.mongodb_client[settings.MONGO_DB_NAME]
+    app.db_client = app.mongo_conn[settings.MONGO_DB_NAME]
     print("Connected to MongoDB!")
 
 @app.on_event("shutdown")
