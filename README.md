@@ -22,6 +22,17 @@ this app for learn implementation for rag model for question answer
 $ cp .env.example .env
 '''
 
+
+# Run Docker Compose Service
+
+```bash
+$ cd docker
+
+$ cd .env.example   .env
+
+```
+- update .env with your credentials
+
 ## Run the fastapi server 
 
 '''
