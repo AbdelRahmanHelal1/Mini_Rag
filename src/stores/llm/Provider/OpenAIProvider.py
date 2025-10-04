@@ -4,12 +4,11 @@ from openai import OpenAI
 import logging
 class OpenAIProvider(LLMInterface):
 
-    def __init__(self,api_key:str,api_url:str=None,df_input_max_char:int=1000,
+    def __init__(self,api_key:str,df_input_max_char:int=1000,
                  
                  df_output_max_char:int=1000,df_temperature:float=0.1):
         
-        self.api_key = api_key
-        self.api_url = api_url      
+        self.api_key = api_key    
         self.df_input_max_char = df_input_max_char
         self.df_output_max_char = df_output_max_char
         self.df_temperature = df_temperature
@@ -18,8 +17,7 @@ class OpenAIProvider(LLMInterface):
         self.embedding_model_id=None
         self.embedding_size=None
 
-        self.client=OpenAI(api_key=self.api_key,
-                           api_url=self.api_url)
+        self.client=OpenAI(api_key=self.api_key)
         
         self.logger = logging.getLogger(__name__)
 
@@ -44,7 +42,7 @@ class OpenAIProvider(LLMInterface):
             self.logger.error("Generation model is not set.")
             return None
         max_out_tokecn=max_out_tokecn if max_out_tokecn else self.df_output_max_char
-        temperature=temperature if temperature else self.self.df_temperature 
+        temperature=temperature if temperature else self.df_temperature 
 
         chat_history.append(self.construct_prompt(
             role=OpenAIEnums.USER.value,
@@ -62,7 +60,8 @@ class OpenAIProvider(LLMInterface):
             self.logger.error("No response data received from OpenAI.")
             return None
         
-        return response.choices[0].message["content"]
+        return response.choices[0].message.content
+
 
 
         
