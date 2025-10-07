@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     DEFAULT_MAX_INPUT_CHARACTER :int =None
     DEFAULT_MAX_OUTPUT_CHARACTER:int =None
     GENERATION_DAFAULT_TEMPERATURE :float =None
+
+    VECTOR_DB_PROVIDER :str 
+    VECTOR_DB_PATH :str  
+    VECTOR_DB_DISTANCE_METRIC :str =None
     
     class Config:
         env_file = ".env"
