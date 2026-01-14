@@ -40,4 +40,4 @@ col_btn1, col_btn2 = st.columns([1, 1])
 with col_btn1:
     st.button("📋 Show Analysis Table")
 with col_btn2:
-    st.button("💾 Save Result")
+    st.button("📊 Show Motion Charts")
