@@ -1,6 +1,7 @@
 from ..VectorDBinterface import VectorDBinterface
 from ..VectorDBEnums import DistanceMethodEnums
 from qdrant_client import QdrantClient ,models
+from models.db_schemes import Retrieve_Document
 import logging
 
 
@@ -43,9 +44,9 @@ class QdrantDB(VectorDBinterface):
 
     def create_collection(self, collection_name: str,
                            embedding_size: int,
-                           dorest: bool = False) :
+                           do_reset: bool = False) :
         
-        if dorest :
+        if do_reset :
             _ = self.delete_collection(collection_name=collection_name)
 
         if not self.is_collection_exists(collection_name=collection_name):
@@ -73,6 +74,7 @@ class QdrantDB(VectorDBinterface):
                     collection_name=collection_name,
                     records=[   
                         models.Record(
+                            id=[record_id],
                             vector=vector,
                             payload={"text": text, "metadata":metadata }
                         )
@@ -94,21 +96,23 @@ class QdrantDB(VectorDBinterface):
             metadata = [None] * len(text)
         
         if record_id is None:
-            record_id = [None] * len(text)
+            record_id = list(range(0,len(text)))
 
         for i in range(0, len(text), batch_size):
             batch_end= i + batch_size
             batch_text = text[i:batch_end]
             batch_vector = vector[i:batch_end]
             batch_metadata = metadata[i:batch_end]
+            batch_id=record_id[i:batch_end]
 
 
             records = [
                 models.Record(
+                    id=rec_id,
                     vector=vec,
                     payload={"text": txt, "metadata": meta}
                 )
-                for txt, vec, meta in zip(batch_text, batch_vector, batch_metadata)
+                for txt, vec, meta,rec_id in zip(batch_text, batch_vector, batch_metadata,batch_id)
             ]
 
             try :
@@ -123,12 +127,25 @@ class QdrantDB(VectorDBinterface):
         return True
     
     def serch_by_vector(self, collection_name: str,
-                        vector :str ,limit :int):
-        return sself.client.search(
+                        vector :str ,limit :int=3):
+        result= self.client.search(
             collection_name=collection_name,
             query_vector=vector,
             limit=limit
         )
+
+        if not result or len(result)==0: 
+            return None
+        
+        return [
+
+                Retrieve_Document(**{
+                    "score":res.score,
+                    "text":res.payload["text"]
+                })
+
+                for res in result 
+        ]
 
     
 

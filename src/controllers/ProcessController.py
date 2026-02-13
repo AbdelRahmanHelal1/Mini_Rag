@@ -1,7 +1,8 @@
 from .BaseController import BaseController
 from .ProjectController import  ProjectController
 from langchain_community.document_loaders import PyMuPDFLoader
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader 
+from langchain_community.document_loaders import JSONLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from models import ProcessingEnums
 import os
@@ -29,8 +30,15 @@ class ProcessController(BaseController):
             return PyMuPDFLoader(file_path)
         elif extension == ProcessingEnums.Txt.value:
             return TextLoader(file_path,encoding="utf-8")
-        else:
-            return None
+        elif extension == ProcessingEnums.Json.value:
+            return JSONLoader(
+                            file_path=file_path,
+                            jq_schema=".messages[]",
+                            content_key="text",
+                            metadata_func=lambda x, _: x.get("metadata", {}),
+                            text_content=False,
+                        )
+        return None
         
     def get_file_content(self,file_id):
         loader = self.load_document(file_id)

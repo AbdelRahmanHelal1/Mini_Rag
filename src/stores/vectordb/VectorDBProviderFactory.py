@@ -1,6 +1,6 @@
 from .Provider import QdrantDB
 from .VectorDBEnums import VectorDBEnums
-from ...controllers import BaseController
+from controllers import BaseController
 
 
 

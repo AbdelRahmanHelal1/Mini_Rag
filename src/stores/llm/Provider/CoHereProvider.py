@@ -102,11 +102,11 @@ class CoHereProvider(LLMInterface):
             self.logger.error(f"Cohere embedding request failed: {e}")
             return None
 
-        if not response or not response.embeddings or len(response.embeddings) == 0:
+        if not response or not response.embeddings or not response.embeddings.float :
             self.logger.error("No embedding data received from Cohere.")
             return None
 
-        return response.embeddings[0]
+        return response.embeddings.float[0]
 
     def construct_prompt(self, prompt: str, role: str):
         return {
