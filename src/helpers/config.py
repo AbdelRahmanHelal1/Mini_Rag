@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     VECTOR_DB_PROVIDER :str 
     VECTOR_DB_PATH :str  
     VECTOR_DB_DISTANCE_METRIC :str =None
+
+    PRIMARY_LANGUAGE: str="arb"
+    DEFULT_LANGUAGE:  str="arb"
     
     class Config:
         env_file = ".env"

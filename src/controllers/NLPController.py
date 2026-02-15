@@ -11,13 +11,14 @@ import os
 
 class NLPController(BaseController):
 
-    def __init__(self, vectordb_client,generation_client,embedding_client):
+    def __init__(self, vectordb_client,generation_client,embedding_client,Tempelete_parser):
         super().__init__()
 
 
         self.vectordb_client=vectordb_client
         self.generation_client=generation_client
         self.embedding_client=embedding_client
+        self.Tempelete_parser=Tempelete_parser
 
     def create_collection_name(self,prject_id:str):
         return f"collection_{prject_id}".strip()
@@ -94,6 +95,53 @@ class NLPController(BaseController):
         )
 
         return results
+    
+    def answer_rag_question(self,project:ProjectDBScheme,
+                          query:str,
+                          limit:int=3):
+        
+        # get retrived releted collection
+
+        retrived_doc =self.search_in_vectordb(
+            project=project,        
+            text=query,
+            limit=limit)
+        
+        if not retrived_doc or len(retrived_doc)==0:
+            return None
+        
+        # construct LLM prompt
+        system_prompt= self.Tempelete_parser.get("rag","System_Prompt")
+        
+
+        documents_prompt="\n".join([
+            self.Tempelete_parser.get("rag","Document_Prompt",{
+                "doc_num":idx+1,
+                "chunk_text":doc.text
+            })
+
+            for idx,doc in enumerate ( retrived_doc)
+        ])
+
+        Footer_Prompt= self.Tempelete_parser.get("rag","Footer_Prompt")
+
+
+        chat_history=[
+            self.generation_client.construct_prompt(
+                prompt=system_prompt,
+                role=self.generation_client.enmus.SYSTEM.value
+            )
+        ]
+
+        full_prompt="\n\n".join([documents_prompt,Footer_Prompt])
+
+        answer=self.generation_client.generation_text(
+            prompt=full_prompt,
+            chat_history=chat_history
+        )
+
+        return answer,full_prompt,chat_history
+
 
                                                
 

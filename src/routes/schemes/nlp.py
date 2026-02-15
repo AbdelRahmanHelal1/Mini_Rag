@@ -10,3 +10,8 @@ class SearchRequest(BaseModel):
 
     text : str 
     limit :Optional[int] = 3
+
+class AnswerRequest(BaseModel):
+
+    text : str 
+    limit :Optional[int] = 3

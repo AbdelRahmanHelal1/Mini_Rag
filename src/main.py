@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from helpers.config import get_settings
 from stores.llm import LLMProviderFactory
 from stores.vectordb import VectorDBProviderFactory
+from stores.llm.Templete.Tempelete_parser import TempleteParser
 import logging
 app = FastAPI()
 
@@ -31,6 +32,11 @@ async def startup_event():
     app.vectordb_client=vectordb_provider_factory.create(settings.VECTOR_DB_PROVIDER)
     
     app.vectordb_client.Connect()
+
+    app.Tempelete_parser=TempleteParser(
+        language=settings.PRIMARY_LANGUAGE,
+        defult_language=settings.DEFULT_LANGUAGE
+    )
 
 
 async def shutdown_event():

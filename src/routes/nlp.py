@@ -1,5 +1,5 @@
 from fastapi import FastAPI,APIRouter,status,Request
-from .schemes.nlp import PushRequest,SearchRequest
+from .schemes.nlp import PushRequest,SearchRequest,AnswerRequest
 from models.ProjectModel import ProjectModel
 from controllers import NLPController
 from fastapi.responses import JSONResponse 
@@ -40,7 +40,8 @@ async def index_project(request :Request, prject_id: str,push_request: PushReque
     nlp_controller=NLPController(
         vectordb_client=request.app.vectordb_client,
         generation_client=request.app.generation_client,
-        embedding_client=request.app.embedding_client
+        embedding_client=request.app.embedding_client,
+        Tempelete_parser=request.app.Tempelete_parser
     )
 
 
@@ -100,7 +101,8 @@ async def index_info(request :Request, prject_id: str):
     nlp_controller=NLPController(
         vectordb_client=request.app.vectordb_client,
         generation_client=request.app.generation_client,
-        embedding_client=request.app.embedding_client
+        embedding_client=request.app.embedding_client,
+        Tempelete_parser=request.app.Tempelete_parser
     )
 
 
@@ -135,7 +137,8 @@ async def index_info(request :Request, prject_id: str,search_request: SearchRequ
     nlp_controller=NLPController(
         vectordb_client=request.app.vectordb_client,
         generation_client=request.app.generation_client,
-        embedding_client=request.app.embedding_client
+        embedding_client=request.app.embedding_client,
+        Tempelete_parser=request.app.Tempelete_parser
     )
 
 
@@ -159,4 +162,45 @@ async def index_info(request :Request, prject_id: str,search_request: SearchRequ
                
                 })
 
+
+
+@nlp_router.post("/index/answer/{prject_id}") 
+async def index_info(request :Request, prject_id: str,answer_request: AnswerRequest):
+
+
+    project_model=await ProjectModel.create_instance(
+        db_client=request.app.db_client
+        )
+    
+    project = await project_model.get_or_create_one(project_id=prject_id)
+
+    nlp_controller=NLPController(
+        vectordb_client=request.app.vectordb_client,
+        generation_client=request.app.generation_client,
+        embedding_client=request.app.embedding_client,
+        Tempelete_parser=request.app.Tempelete_parser
+    )
+
+    if not project:
+        return JSONResponse(
+            content={"Signal": ResponseSignal.PROJECT_NOT_FOUND.value},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    answer,full_prompt,chat_history=nlp_controller.answer_rag_question(
+        project=project,
+        query=answer_request.text,
+        limit=answer_request.limit
+    )
+
+    if not answer:
+        return JSONResponse(
+            content={"Signal": ResponseSignal.NOT_ANSWER_GENERATED.value},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    
+
+    return JSONResponse(content={ 
+            "Signal": ResponseSignal.ANSWER_GENERATED_SUCSSES.value,
+            "answer":answer })
+        
 

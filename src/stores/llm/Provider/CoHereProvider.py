@@ -13,6 +13,7 @@ class CoHereProvider(LLMInterface):
         self.df_input_max_char = df_input_max_char
         self.df_output_max_char = df_output_max_char
         self.df_temperature = df_temperature
+        self.enmus=CohereEnums
 
         self.generation_model_id = None
         self.embedding_model_id = None
