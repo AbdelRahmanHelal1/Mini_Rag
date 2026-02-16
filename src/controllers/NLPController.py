@@ -100,6 +100,8 @@ class NLPController(BaseController):
                           query:str,
                           limit:int=3):
         
+        answer,full_prompt,chat_history=None,None,None
+        
         # get retrived releted collection
 
         retrived_doc =self.search_in_vectordb(
@@ -108,7 +110,7 @@ class NLPController(BaseController):
             limit=limit)
         
         if not retrived_doc or len(retrived_doc)==0:
-            return None
+            return answer,full_prompt,chat_history
         
         # construct LLM prompt
         system_prompt= self.Tempelete_parser.get("rag","System_Prompt")
@@ -123,7 +125,9 @@ class NLPController(BaseController):
             for idx,doc in enumerate ( retrived_doc)
         ])
 
-        Footer_Prompt= self.Tempelete_parser.get("rag","Footer_Prompt")
+        Footer_Prompt= self.Tempelete_parser.get("rag","Footer_Prompt",{
+            "query":query
+        })
 
 
         chat_history=[
